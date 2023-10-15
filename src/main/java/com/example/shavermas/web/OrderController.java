@@ -1,8 +1,8 @@
 package com.example.shavermas.web;
 
 import com.example.shavermas.ShavermaOrder;
+import com.example.shavermas.data.OrderRepository;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,16 +13,20 @@ import org.springframework.web.bind.support.SessionStatus;
 
 /**
  * Class for order controller.
- * Annotation Slf4j from lombok generates logger for this class.
  * Annotation Controller defines class as a controller.
  * Annotation RequestMapping("/orders") provides the class to handle requests start with "/orders".
  * Annotation SessionAttributes("shavermaOrder") indicates that the ShavermaOrder object declared in the class should be maintained at the session level.
  */
-@Slf4j
 @Controller
 @RequestMapping("/orders")
 @SessionAttributes("shavermaOrder")
 public class OrderController {
+
+    private OrderRepository orderRepo;
+
+    public OrderController(OrderRepository orderRepo) {
+        this.orderRepo = orderRepo;
+    }
 
     /**
      * Method invokes to handle GET request with path "/orders/current".
@@ -35,7 +39,7 @@ public class OrderController {
 
     /**
      * Method to handle POST request.Method receives ShavermaOrder object from orderForm.
-     * It logs ShavermaOrder object. Completes session of creating shaverma.
+     * It saves ShavermaOrder object into DB. Completes session of creating shaverma.
      * @param order with annotation Valid to check it for validness.
      * @param errors gets errors if order invalid.
      * @param sessionStatus
@@ -47,7 +51,7 @@ public class OrderController {
             return "orderForm";
         }
 
-        log.info("Order submitted: {}", order);
+        orderRepo.save(order);
         sessionStatus.setComplete();
 
         return "redirect:/";

@@ -3,8 +3,10 @@ package com.example.shavermas.web;
 import com.example.shavermas.Ingredient;
 import com.example.shavermas.Shaverma;
 import com.example.shavermas.ShavermaOrder;
+import com.example.shavermas.data.IngredientRepository;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Controller class for designing shaverma.
@@ -28,31 +31,20 @@ import java.util.stream.Collectors;
 @SessionAttributes("shavermaOrder")
 public class DesignShavermaController {
 
+    private final IngredientRepository ingredientRepo;
+
+    @Autowired
+    public DesignShavermaController(IngredientRepository ingredientRepo) {
+        this.ingredientRepo = ingredientRepo;
+    }
+
     /**
-     * Adds to Model list of ingredients filtered by type.
-     * @param model
+     * Gets all Ingredients from database, filters them and ads them to model.
+     * @param model model to place Ingredient objects.
      */
     @ModelAttribute
     public void addIngredientsToModel(Model model) {
-        List<Ingredient> ingredients = Arrays.asList(
-                new Ingredient("LAVA", "Lavash", Ingredient.Type.WRAP),
-                new Ingredient("CHLA", "Cheese Lavash", Ingredient.Type.WRAP),
-                new Ingredient("PITA", "Pita", Ingredient.Type.WRAP),
-                new Ingredient("ONPL", "On Plate", Ingredient.Type.WRAP),
-                new Ingredient("PORK", "Pork", Ingredient.Type.PROTEIN),
-                new Ingredient("CHIC", "Chicken", Ingredient.Type.PROTEIN),
-                new Ingredient("ONIO", "Onion", Ingredient.Type.VEGGIES),
-                new Ingredient("CUCU", "Cucumber", Ingredient.Type.VEGGIES),
-                new Ingredient("PICK", "Pickles", Ingredient.Type.VEGGIES),
-                new Ingredient("TOMA", "Tomato", Ingredient.Type.VEGGIES),
-                new Ingredient("KCAR", "Korean Carrots", Ingredient.Type.VEGGIES),
-                new Ingredient("JALA", "Jalapeno", Ingredient.Type.VEGGIES),
-                new Ingredient("CHED", "Cheddar", Ingredient.Type.CHEESE),
-                new Ingredient("PARM", "Parmesan", Ingredient.Type.CHEESE),
-                new Ingredient("GASA", "Garlic Sauce", Ingredient.Type.SAUCE),
-                new Ingredient("SPSA", "Spicy Sauce", Ingredient.Type.SAUCE),
-                new Ingredient("SCSA", "Sour Cream Sauce", Ingredient.Type.SAUCE)
-        );
+        Iterable<Ingredient> ingredients = ingredientRepo.findAll();
 
         Ingredient.Type[] types = Ingredient.Type.values();
         for (Ingredient.Type type : types) {
@@ -108,13 +100,13 @@ public class DesignShavermaController {
 
     /**
      * Helper method to filter ingredients by type.
-     * @param ingredients
-     * @param type
-     * @return filtered ingredients
+     *
+     * @param ingredients Iterable of Ingredient objects.
+     * @param type type of ingredient to be filtered.
+     * @return filtered ingredients.
      */
-    private Iterable<Ingredient> filterByType(List<Ingredient> ingredients, Ingredient.Type type) {
-        return ingredients
-                .stream()
+    private Iterable<Ingredient> filterByType(Iterable<Ingredient> ingredients, Ingredient.Type type) {
+        return StreamSupport.stream(ingredients.spliterator(), false)
                 .filter(x -> x.getType().equals(type))
                 .collect(Collectors.toList());
     }

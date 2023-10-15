@@ -6,7 +6,9 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +16,13 @@ import java.util.List;
  * Annotation Data from lombok generates getters, setters, constructor, hashCode(), toString(), equals().
  */
 @Data
-public class ShavermaOrder {
+public class ShavermaOrder implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private long id;
+
+    private Date placedAt;
 
     @NotBlank(message = "Delivery name is required")
     private String deliveryName;

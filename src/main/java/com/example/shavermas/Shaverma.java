@@ -1,9 +1,11 @@
 package com.example.shavermas;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,8 +14,11 @@ import java.util.List;
  * Annotation Data from lombok generates getters, setters, constructor, hashCode(), toString(), equals()
  */
 @Data
+@Entity
 public class Shaverma {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     private Date createdAt = new Date();
@@ -28,7 +33,15 @@ public class Shaverma {
     /**
      * List of ingredients. Must contain at least 1 ingredient.
      */
-    @NotNull
     @Size(min = 1, message = "You must choose at least 1 ingredient")
-    private List<IngredientRef> ingredients;
+    @ManyToMany()
+    private List<Ingredient> ingredients = new ArrayList<>();
+
+    /**
+     * Add ingredient to List of ingredients.
+     * @param ingredient to add to ingredients.
+     */
+    public void addIngredient(Ingredient ingredient) {
+        this.ingredients.add(ingredient);
+    }
 }

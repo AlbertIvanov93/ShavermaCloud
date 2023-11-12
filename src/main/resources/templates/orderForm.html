@@ -7,7 +7,10 @@
 </head>
 
 <body>
-<form method="POST" th:action="@{/orders}" th:object="${shavermaOrder}">
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+<form method="POST" th:action="@{/orders}" th:object="${shavermaOrder}" id="orderForm">
     <h1>Order your shaverma creations!</h1>
 
     <img th:src="@{/images/ShavermaCloud.png}" alt="Shaverma png"/>

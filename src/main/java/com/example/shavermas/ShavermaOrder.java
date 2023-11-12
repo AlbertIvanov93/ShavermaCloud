@@ -26,7 +26,7 @@ public class ShavermaOrder implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private Date placedAt = new Date();
+    private Date placedAt;
 
     //you can add @Column annotation to specify name of a column in DB.
     @NotBlank(message = "Delivery name is required")
@@ -53,8 +53,16 @@ public class ShavermaOrder implements Serializable {
     @Digits(integer = 3, fraction = 0, message = "Invalid CVV")
     private String ccCVV;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Shaverma.class)
     private List<Shaverma> shavermas = new ArrayList<>();
+
+    @ManyToOne
+    private User user;
+
+    @PrePersist
+    public void placedAt() {
+        this.placedAt = new Date();
+    }
 
     /**
      * Adds shaverma to list of order.

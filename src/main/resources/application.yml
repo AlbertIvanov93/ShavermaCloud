@@ -1,0 +1,15 @@
+spring:
+  thymeleaf:
+    cache: true
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/shaverma_db
+    username: albert
+    password: 12345678
+    driver-class-name: com.mysql.cj.jdbc.Driver

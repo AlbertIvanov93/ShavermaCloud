@@ -7,10 +7,14 @@
 </head>
 
 <body>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
 <h1>Design your shaverma!</h1>
 <img th:src="@{/images/ShavermaCloud.png}" alt="Shaverma png"/>
 
-<form method="POST" th:object="${shaverma}">
+
+<form method="POST" th:object="${shaverma}" th:action="@{/design}" id="shavermaForm">
 
     <span class="validationError"
           th:if="${#fields.hasErrors('ingredients')}"

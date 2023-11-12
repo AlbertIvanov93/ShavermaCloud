@@ -1,15 +1,16 @@
 package com.example.shavermas.web;
 
 import com.example.shavermas.ShavermaOrder;
+import com.example.shavermas.User;
 import com.example.shavermas.data.OrderRepository;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
+
+import java.security.Principal;
 
 /**
  * Class for order controller.
@@ -33,8 +34,23 @@ public class OrderController {
      * @return the name of view "orderForm".
      */
     @GetMapping("/current")
-    public String orderForm() {
-        return "orderForm";
+    public String orderForm(@AuthenticationPrincipal User user,
+                            @ModelAttribute ShavermaOrder order) {
+        if (order.getDeliveryName() == null) {
+            order.setDeliveryName(user.getFullname());
+        }
+        if (order.getDeliveryStreet() == null) {
+            order.setDeliveryStreet(user.getStreet());
+        }
+        if (order.getDeliveryCity() == null) {
+            order.setDeliveryCity(user.getCity());
+        }
+        if (order.getDeliveryState() == null) {
+            order.setDeliveryState(user.getState());
+        }
+        if (order.getDeliveryZip() == null) {
+            order.setDeliveryZip(user.getZip());
+        }        return "orderForm";
     }
 
     /**
@@ -46,10 +62,13 @@ public class OrderController {
      * @return redirect: sends GET request with path "/".
      */
     @PostMapping
-    public String processOrder(@Valid ShavermaOrder order, Errors errors, SessionStatus sessionStatus) {
+    public String processOrder(@Valid ShavermaOrder order, Errors errors, SessionStatus sessionStatus, @AuthenticationPrincipal User user) {
+        System.out.println("start order");
         if(errors.hasErrors()) {
             return "orderForm";
         }
+
+        order.setUser(user);
 
         orderRepo.save(order);
         sessionStatus.setComplete();

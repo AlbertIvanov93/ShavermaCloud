@@ -4,6 +4,8 @@ import com.example.shavermas.Ingredient;
 import com.example.shavermas.Shaverma;
 import com.example.shavermas.ShavermaOrder;
 import com.example.shavermas.data.IngredientRepository;
+import com.example.shavermas.data.ShavermaRepository;
+import com.example.shavermas.data.UserRepository;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +35,15 @@ public class DesignShavermaController {
 
     private final IngredientRepository ingredientRepo;
 
+    private ShavermaRepository shavermaRepo;
+
+    private UserRepository userRepo;
+
     @Autowired
-    public DesignShavermaController(IngredientRepository ingredientRepo) {
+    public DesignShavermaController(IngredientRepository ingredientRepo, ShavermaRepository shavermaRepo, UserRepository userRepo) {
         this.ingredientRepo = ingredientRepo;
+        this.shavermaRepo = shavermaRepo;
+        this.userRepo = userRepo;
     }
 
     /**
@@ -89,9 +97,11 @@ public class DesignShavermaController {
      */
     @PostMapping
     public String processShaverma(@Valid Shaverma shaverma, Errors errors, @ModelAttribute ShavermaOrder shavermaOrder) {
+        System.out.println("start design");
         if (errors.hasErrors()) {
             return "design";
         }
+        Shaverma savedShaverma = shavermaRepo.save(shaverma);
         shavermaOrder.addShaverma(shaverma);
         log.info("Processing shaverma: {}", shaverma);
 
